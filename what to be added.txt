@@ -1,0 +1,15 @@
+4.3 Remote Access Scenario
+Aside from providing host-based authentication for local
+access, MDA techniques could also potentially be employed
+in remote access scenarios, such as web-based applications.
+To properly evaluate their eectiveness in this scenario, we
+must consider the fact that, in practice, a given user may
+access a single web-based application from multiple computers. This could lead to the situation in which the enrollment
+data for a user is collected under a dierent computing environment than the data used for verication. Thus, to be
+eective in this scenario, the authentication system must
+be capable of recognizing a user's behavior across dierent computing environments. To the best of our knowledge,
+the eectiveness of mouse dynamics based authentication
+has not been evaluated under this scenario in the existing
+literature.
+--
+from summary - page 4
