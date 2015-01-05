@@ -1,0 +1,2 @@
+as.bs = |as|.|bs|.cos(t)
+cos(t) = as.bs/(|as|.|bs|)

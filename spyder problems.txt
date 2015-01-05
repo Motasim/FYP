@@ -1,0 +1,2 @@
+the command that solves spyder problem:
+python -c "from spyderlib.spyder import main; main()" --reset
