@@ -95,8 +95,9 @@ def replicate_paper(mouse_objs):
         direction = p1.get_angle(p2)
         curve_ang = p1.get_curve_ang(p2,p3)
         curvature = p2.get_curvature(p1,p3)
+        time = p1._time - p2._time
         if curve_ang != None and curvature != None:
-            res.append([direction , curve_ang , curvature])
+            res.append([direction , curve_ang , curvature , time])
     return res
 def get_arr(file_name):
     log_file = open(file_name)    
@@ -118,7 +119,6 @@ def get_clf(data  , user_index , data_size): #returns set of classifiers for use
         clf = svm.SVC(kernel = 'rbf')
         learn_data = np.concatenate((data[user_index][0:data_size] , data[i][0:data_size]) , axis = 0) 
         lables = [1]*data_size + [-1]*data_size
-        print len(learn_data) , len(lables)
         clf.fit(learn_data , lables)
         res.append(clf)
     return res
@@ -135,13 +135,21 @@ def get_clfs_prc(data , clfs):
     for feature_vector in data:
         if get_lablel(feature_vector , clfs):
             ones += 1
-    print ones
     return ones*1.0/len(data)
 y = []
-logs_number = 4
+logs_number = 6
+number_of_test_cases = 15000
 for i in range(logs_number):
     y.append(get_arr("D:\FYP\mouselogs/"+str(i+1)+".txt"))
 for i in range(len(y)):
     y[i] = replicate_paper(y[i])
     y[i] = preprocessing.scale(y[i])
-clfs = get_clf(y , 0 , 15000)
+clfs = get_clf(y[0:4] , 0 , number_of_test_cases)
+
+print 'traning pre => ' , get_clfs_prc(y[0][0:15000] , clfs)
+print 'testing the same y pre =>' ,get_clfs_prc(y[0][15000:-1] , clfs)
+print 'testing the same y small=>' ,get_clfs_prc(y[0][15000:16000] , clfs)
+for i in range(len(y)-2):
+    print 'testing outside with training' ,i+1, get_clfs_prc(y[i+1][0:15000] , clfs)
+    print 'testing outside with small testing' , i+1 , get_clfs_prc(y[i+1][15000:16000] , clfs)
+    
